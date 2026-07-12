@@ -469,7 +469,7 @@ if savedKey then
         task.wait(0.5)
         
         -- Load the main script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/electrax_premium.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yazan1010111testing/keepemcoming/refs/heads/main/electrax_premium.lua"))()
         return
     else
         print("[ElectraX] Saved key invalid: " .. message)
