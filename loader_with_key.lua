@@ -1,6 +1,6 @@
 --[[
     ElectraX Premium Loader with Key System
-    Version: 3.0.0
+    Version: 4.0.0
     
     Get your key at: https://work.ink/YOUR_LINK
     
@@ -405,28 +405,30 @@ local function CreateUI()
             ValidateButton.Text = "Success! ✓"
             ValidateButton.BackgroundColor3 = Color3.fromRGB(50, 255, 100)
             
-            task.wait(1)
+            task.wait(0.5)
             
-            -- Fade out animation
-            TweenService:Create(MainFrame, TweenInfo.new(0.5), {
-                BackgroundTransparency = 1
-            }):Play()
+            -- Complete fade out animation
+            local fadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             
             for _, obj in ipairs(MainFrame:GetDescendants()) do
                 if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-                    TweenService:Create(obj, TweenInfo.new(0.5), {
-                        TextTransparency = 1
-                    }):Play()
+                    TweenService:Create(obj, fadeInfo, {TextTransparency = 1}):Play()
                 end
-                if obj:IsA("Frame") or obj:IsA("ImageLabel") then
-                    TweenService:Create(obj, TweenInfo.new(0.5), {
-                        BackgroundTransparency = 1,
-                        ImageTransparency = 1
-                    }):Play()
+                if obj:IsA("Frame") or obj:IsA("ImageButton") then
+                    TweenService:Create(obj, fadeInfo, {BackgroundTransparency = 1}):Play()
+                end
+                if obj:IsA("ImageLabel") then
+                    TweenService:Create(obj, fadeInfo, {ImageTransparency = 1}):Play()
+                end
+                if obj:IsA("UICorner") then
+                    obj.Parent.BackgroundTransparency = 1
                 end
             end
             
-            task.wait(0.5)
+            TweenService:Create(MainFrame, fadeInfo, {BackgroundTransparency = 1}):Play()
+            TweenService:Create(Shadow, fadeInfo, {ImageTransparency = 1}):Play()
+            
+            task.wait(0.3)
             ScreenGui:Destroy()
         else
             StatusLabel.Text = message
@@ -466,10 +468,16 @@ if savedKey then
     
     if success then
         print("[ElectraX] Saved key valid! Loading ElectraX Premium...")
-        task.wait(0.5)
+        task.wait(0.3)
         
         -- Load the main script
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yazan1010111testing/keepemcoming/refs/heads/main/electrax_premium.lua"))()
+        local scriptSuccess, scriptError = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/yazan1010111testing/keepemcoming/refs/heads/main/electrax_premium.lua"))()
+        end)
+        
+        if not scriptSuccess then
+            warn("[ElectraX] Failed to load main script:", scriptError)
+        end
         return
     else
         print("[ElectraX] Saved key invalid: " .. message)
@@ -482,13 +490,24 @@ local ui = CreateUI()
 
 -- Wait for validation
 while not KeyValidated do
-    task.wait(0.5)
+    task.wait(0.1)
 end
 
 print("[ElectraX] Key validated! Loading ElectraX Premium...")
 task.wait(0.5)
 
 -- Load the main script
-loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/electrax_premium.lua"))()
+local scriptSuccess, scriptError = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/yazan1010111testing/keepemcoming/refs/heads/main/electrax_premium.lua"))()
+end)
 
-print("[ElectraX] ElectraX Premium loaded successfully!")
+if scriptSuccess then
+    print("[ElectraX] ElectraX Premium loaded successfully!")
+else
+    warn("[ElectraX] Failed to load main script:", scriptError)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "ElectraX Error",
+        Text = "Failed to load script. Check console for details.",
+        Duration = 5
+    })
+end
